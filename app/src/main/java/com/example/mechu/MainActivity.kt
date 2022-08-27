@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private var getLatitude : Double? = null //위도
     private var getLongitude : Double? = null //경도
 
-    private val listItems = arrayListOf<Place>()
+    private val listItems = ArrayList<Place>()
 
 
     // REST API 키
@@ -46,6 +46,8 @@ class MainActivity : AppCompatActivity() {
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val pickIntent = Intent(this, PickActivity::class.java)
+        val gameIntent = Intent(this, GameActivity::class.java)
 
         // 카카오맵 띄우기
         val mapView = MapView(this)
@@ -53,14 +55,13 @@ class MainActivity : AppCompatActivity() {
 
         // 버튼들
         binding.PickFab.setOnClickListener {
-            val nextIntent = Intent(this, PickActivity::class.java)
-            nextIntent.putExtra("Latitude", getLatitude)
-            nextIntent.putExtra("Longitude", getLongitude)
-            startActivity(nextIntent)
+            searchKeywordAndMaker(binding, mapView, pickIntent)
+            pickIntent.putExtra("Latitude", getLatitude)
+            pickIntent.putExtra("Longitude", getLongitude)
+            startActivity(pickIntent)
         }
         binding.gameButton.setOnClickListener {
-            val nextIntent = Intent(this, GameActivity::class.java)
-            startActivity(nextIntent)
+            startActivity(gameIntent)
         }
 
         //최초 권한 확인
@@ -74,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                     mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
                     //지역 정보 받아오고 마커 찍기
-                    searchKeywordAndMaker(binding, mapView)
+                    searchKeywordAndMaker(binding, mapView, pickIntent)
 
 
                 } else {
@@ -119,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchKeywordAndMaker(binding: ActivityMainBinding, mapView: MapView) {
+    private fun searchKeywordAndMaker(binding: ActivityMainBinding, mapView: MapView, pickIntent:Intent) {
         val retrofit = Retrofit.Builder()   // Retrofit 구성
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -142,6 +143,16 @@ class MainActivity : AppCompatActivity() {
 
                     saveResultofAPI(mapView, response.body())
                     //Log.d("Test0", listItems.size.toString())
+
+
+                    // 인텐트로 pickActivity에 전달
+                    val randomNum = (0..listItems.size).random()
+                    pickIntent.putExtra("place_name", listItems[randomNum].place_name)
+                    pickIntent.putExtra("x", listItems[randomNum].x)
+                    pickIntent.putExtra("y", listItems[randomNum].y)
+                    pickIntent.putExtra("phone", listItems[randomNum].phone)
+                    pickIntent.putExtra("road_address_name", listItems[randomNum].road_address_name)
+
                 } else {
                     // 통신은 성공했지만 문제가 있는 경우
                 }

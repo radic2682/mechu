@@ -49,17 +49,6 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/addd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="40sp"
-        android:text="Mechu"
-        android:fontFamily="@font/nautiluspompilius"
-        android:textColor="@color/black"
-        android:padding="100dp"
-        />
-
-    <TextView
         android:id="@+id/warnText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

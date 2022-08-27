@@ -44,6 +44,7 @@
             android:layout_gravity="center"
             android:textSize="30sp"
             android:text="가게이름"
+            android:textColor="@color/black"
             />
         <TextView
             android:layout_gravity="end"
@@ -61,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:textSize="25sp"
+        android:textSize="26sp"
         android:text="Intormation"
         android:layout_marginTop="50dp"
         />
@@ -72,27 +73,50 @@
         app:layout_constraintTop_toBottomOf="@id/text_information"
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical"
-        android:layout_marginTop="10dp"
         >
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:textSize="20sp"
-            android:text="전화번호: "
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="전화번호: "
+                />
+            <TextView
+                android:id="@+id/phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text=""
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="주소: "
             />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:textSize="20sp"
-            android:text="주소: "/>
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text=""/>
+        </LinearLayout>
 
-        <fragment
+        <FrameLayout
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.naver.maps.map.MapFragment" />
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
