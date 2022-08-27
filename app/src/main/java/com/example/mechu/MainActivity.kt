@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.mechu.databinding.ActivityMainBinding
+import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
 import retrofit2.Call
@@ -25,6 +26,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     private var getLatitude : Double? = null //위도
     private var getLongitude : Double? = null //경도
+
+    private val listItems = ArrayList<Place>()
 
     // REST API 키
     companion object {
@@ -63,11 +66,8 @@ class MainActivity : AppCompatActivity() {
                     mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(getLatitude!!, getLongitude!!), 3, true)
                     mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
-                    //지역 정보 받아오기
-                    searchKeyword()
-
-
-                    //마커 설정
+                    //지역 정보 받아오고 마커 찍기
+                    searchKeywordAndMaker(binding, mapView)
 
 
                 } else {
@@ -112,30 +112,72 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchKeyword() {
+    private fun searchKeywordAndMaker(binding: ActivityMainBinding, mapView: MapView) {
         val retrofit = Retrofit.Builder()   // Retrofit 구성
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(KakaoAPI::class.java)   // 통신 인터페이스를 객체로 생성
-        val call = api.getSearchCategory(API_KEY, "FD6", getLongitude.toString(), getLatitude.toString(), 500)   // 검색 조건 입력
 
         // API 서버에 요청
-        call.enqueue(object: Callback<ResultSearchKeyword> {
+        api.getSearchCategory(API_KEY, "FD6", getLongitude.toString(), getLatitude.toString(), 600)
+            .enqueue(object: Callback<ResultSearchKeyword> {
             override fun onResponse(
                 call: Call<ResultSearchKeyword>,
                 response: Response<ResultSearchKeyword>
             ) {
                 // 통신 성공 (검색 결과는 response.body()에 담겨있음)
+                binding.PickFab.visibility = View.VISIBLE
+
                 Log.d("Test", "Raw: ${response.raw()}")
                 Log.d("Test", "Body: ${response.body()}")
+
+
+                saveResultofAPI(mapView, response.body())
+                Log.d("Test0", listItems.size.toString())
             }
 
             override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
                 // 통신 실패
                 Log.w("MainActivity", "통신 실패: ${t.message}")
+                TODO("메세지 띄우기 서버 통신 불량")
             }
         })
+    }
+
+    private fun saveResultofAPI(mapView: MapView, searchResult: ResultSearchKeyword?) {
+        if (!searchResult?.documents.isNullOrEmpty()) {
+            // 검색 결과 있음
+            listItems.clear()           // 리스트 초기화
+            mapView.removeAllPOIItems() // 지도의 마커 모두 제거
+            for (document in searchResult!!.documents) {
+                val tempPlace = Place(document.place_name,
+                    document.road_address_name,
+                    document.address_name,
+                    document.phone,
+                    document.place_url,
+                    document.x,
+                    document.y
+                )
+
+                listItems.add(tempPlace)
+
+
+                // 지도에 마커 추가
+                val point = MapPOIItem()
+                point.apply {
+                    itemName = document.place_name
+                    mapPoint = MapPoint.mapPointWithGeoCoord(document.y.toDouble(),
+                        document.x.toDouble())
+                    markerType = MapPOIItem.MarkerType.BluePin
+                    selectedMarkerType = MapPOIItem.MarkerType.RedPin
+                }
+                mapView.addPOIItem(point)
+            }
+
+        } else {
+            // 검색 결과 없음
+        }
     }
 
 }
