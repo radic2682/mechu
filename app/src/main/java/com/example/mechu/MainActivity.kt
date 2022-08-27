@@ -1,19 +1,23 @@
 package com.example.mechu
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.mechu.databinding.ActivityMainBinding
+import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
@@ -27,7 +31,8 @@ class MainActivity : AppCompatActivity() {
     private var getLatitude : Double? = null //위도
     private var getLongitude : Double? = null //경도
 
-    private val listItems = ArrayList<Place>()
+    private val listItems = arrayListOf<Place>()
+
 
     // REST API 키
     companion object {
@@ -49,6 +54,8 @@ class MainActivity : AppCompatActivity() {
         // 버튼들
         binding.PickFab.setOnClickListener {
             val nextIntent = Intent(this, PickActivity::class.java)
+            nextIntent.putExtra("Latitude", getLatitude)
+            nextIntent.putExtra("Longitude", getLongitude)
             startActivity(nextIntent)
         }
         binding.gameButton.setOnClickListener {
@@ -118,23 +125,27 @@ class MainActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(KakaoAPI::class.java)   // 통신 인터페이스를 객체로 생성
+        val call = api.getSearchCategory(API_KEY, "FD6", getLongitude.toString(), getLatitude.toString(), 600)
 
         // API 서버에 요청
-        api.getSearchCategory(API_KEY, "FD6", getLongitude.toString(), getLatitude.toString(), 600)
-            .enqueue(object: Callback<ResultSearchKeyword> {
+        call.enqueue(object: Callback<ResultSearchKeyword> {
             override fun onResponse(
                 call: Call<ResultSearchKeyword>,
                 response: Response<ResultSearchKeyword>
             ) {
-                // 통신 성공 (검색 결과는 response.body()에 담겨있음)
-                binding.PickFab.visibility = View.VISIBLE
+                if(response.isSuccessful) {
+                    // 통신 성공 (검색 결과는 response.body()에 담겨있음)
+                    binding.PickFab.visibility = View.VISIBLE
 
-                Log.d("Test", "Raw: ${response.raw()}")
-                Log.d("Test", "Body: ${response.body()}")
+                    Log.d("Test", "Raw: ${response.raw()}")
+                    Log.d("Test", "Body: ${response.body()}")
 
+                    saveResultofAPI(mapView, response.body())
+                    //Log.d("Test0", listItems.size.toString())
+                } else {
+                    // 통신은 성공했지만 문제가 있는 경우
+                }
 
-                saveResultofAPI(mapView, response.body())
-                Log.d("Test0", listItems.size.toString())
             }
 
             override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
@@ -148,7 +159,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveResultofAPI(mapView: MapView, searchResult: ResultSearchKeyword?) {
         if (!searchResult?.documents.isNullOrEmpty()) {
             // 검색 결과 있음
-            listItems.clear()           // 리스트 초기화
+            //listItems.clear()           // 리스트 초기화
             mapView.removeAllPOIItems() // 지도의 마커 모두 제거
             for (document in searchResult!!.documents) {
                 val tempPlace = Place(document.place_name,
@@ -164,11 +175,12 @@ class MainActivity : AppCompatActivity() {
 
 
                 // 지도에 마커 추가
+                mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
+
                 val point = MapPOIItem()
                 point.apply {
                     itemName = document.place_name
-                    mapPoint = MapPoint.mapPointWithGeoCoord(document.y.toDouble(),
-                        document.x.toDouble())
+                    mapPoint = MapPoint.mapPointWithGeoCoord(document.y.toDouble(), document.x.toDouble())
                     markerType = MapPOIItem.MarkerType.BluePin
                     selectedMarkerType = MapPOIItem.MarkerType.RedPin
                 }
@@ -177,6 +189,23 @@ class MainActivity : AppCompatActivity() {
 
         } else {
             // 검색 결과 없음
+        }
+    }
+
+    class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
+        @SuppressLint("InflateParams")
+        private val mCalloutBalloon: View = inflater.inflate(R.layout.balloon_layout, null)
+        private val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
+
+        override fun getCalloutBalloon(poiItem: MapPOIItem?): View {
+            // 마커 클릭 시 나오는 말풍선
+            name.text = poiItem?.itemName   // 해당 마커의 정보 이용 가능
+            return mCalloutBalloon
+        }
+
+        override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
+            // 말풍선 클릭 시
+            return mCalloutBalloon
         }
     }
 

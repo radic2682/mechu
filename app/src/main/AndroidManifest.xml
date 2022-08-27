@@ -21,6 +21,9 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="8b52dbe8d673dd33fb32c215ed1ccb14"/>
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="uu3vsuapmy" />
         <activity
             android:name=".PickActivity"
             android:exported="false" />

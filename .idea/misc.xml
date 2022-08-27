@@ -3,9 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Desk_Files_Potals/Files/android/Mechu/mechu/app/src/main/res/drawable/balloon_layout.xml" value="0.187" />
         <entry key="..\:/Desk_Files_Potals/Files/android/Mechu/mechu/app/src/main/res/layout/activity_game.xml" value="0.29791666666666666" />
         <entry key="..\:/Desk_Files_Potals/Files/android/Mechu/mechu/app/src/main/res/layout/activity_main.xml" value="0.29791666666666666" />
         <entry key="..\:/Desk_Files_Potals/Files/android/Mechu/mechu/app/src/main/res/layout/activity_pick.xml" value="0.2833333333333333" />
+        <entry key="..\:/Desk_Files_Potals/Files/android/Mechu/mechu/app/src/main/res/layout/balloon_layout.xml" value="0.29791666666666666" />
       </map>
     </option>
   </component>
