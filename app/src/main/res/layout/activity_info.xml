@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InfoActivity"
+    >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mechu\n저작권 어쩌고 저쩌고 뭘 사용했고"
+        android:layout_gravity="center"
+        android:fontFamily="@font/cafe24ssurround"
+        android:textSize="20sp"
+        />
+
+
+</FrameLayout>

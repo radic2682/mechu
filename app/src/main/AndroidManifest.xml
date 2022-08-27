@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Mechu"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".InfoActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.kakao.sdk.AppKey"

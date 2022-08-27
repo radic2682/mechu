@@ -6,7 +6,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="4px"
-    app:cardCornerRadius="8px">
+    app:cardCornerRadius="8px"
+    android:backgroundTint="#eeddaa"
+    >
 
     <TextView
         android:id="@+id/ball_tv_name"
@@ -14,8 +16,10 @@
         android:layout_height="wrap_content"
         android:text="장소명"
         android:textColor="?android:attr/textColorPrimary"
-        android:textSize="14sp"
+        android:textSize="22sp"
         android:padding="4dp"
+
+        android:fontFamily="@font/cafe24shiningstar"
         />
 
 </androidx.cardview.widget.CardView>

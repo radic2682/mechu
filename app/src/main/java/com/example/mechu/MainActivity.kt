@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val pickIntent = Intent(this, PickActivity::class.java)
         val gameIntent = Intent(this, GameActivity::class.java)
-
+        val infoIntent = Intent(this, InfoActivity::class.java)
         // 카카오맵 띄우기
         val mapView = MapView(this)
         binding.mapView.addView(mapView)
@@ -62,6 +62,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.gameButton.setOnClickListener {
             startActivity(gameIntent)
+        }
+        binding.infoButton.setOnClickListener {
+            startActivity(infoIntent)
         }
 
         //최초 권한 확인
@@ -130,6 +133,7 @@ class MainActivity : AppCompatActivity() {
 
         // API 서버에 요청
         call.enqueue(object: Callback<ResultSearchKeyword> {
+            @SuppressLint("SetTextI18n")
             override fun onResponse(
                 call: Call<ResultSearchKeyword>,
                 response: Response<ResultSearchKeyword>
@@ -152,7 +156,13 @@ class MainActivity : AppCompatActivity() {
                     pickIntent.putExtra("y", listItems[randomNum].y)
                     pickIntent.putExtra("phone", listItems[randomNum].phone)
                     pickIntent.putExtra("road_address_name", listItems[randomNum].road_address_name)
+                    pickIntent.putExtra("place_url", listItems[randomNum].place_url)
 
+                    if(listItems.size != 0){
+                        binding.findCount.text = "행운이에요!\n근처에 ${listItems.size}개의 음식점이 있어요!"
+                    } else {
+                        binding.findCount.text = "ㅠㅠ...\n근처에 음식점이 없어요..."
+                    }
                 } else {
                     // 통신은 성공했지만 문제가 있는 경우
                 }
@@ -170,7 +180,7 @@ class MainActivity : AppCompatActivity() {
     private fun saveResultofAPI(mapView: MapView, searchResult: ResultSearchKeyword?) {
         if (!searchResult?.documents.isNullOrEmpty()) {
             // 검색 결과 있음
-            //listItems.clear()           // 리스트 초기화
+            listItems.clear()           // 리스트 초기화
             mapView.removeAllPOIItems() // 지도의 마커 모두 제거
             for (document in searchResult!!.documents) {
                 val tempPlace = Place(document.place_name,
@@ -187,13 +197,14 @@ class MainActivity : AppCompatActivity() {
 
                 // 지도에 마커 추가
                 mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
-
                 val point = MapPOIItem()
+
                 point.apply {
                     itemName = document.place_name
                     mapPoint = MapPoint.mapPointWithGeoCoord(document.y.toDouble(), document.x.toDouble())
-                    markerType = MapPOIItem.MarkerType.BluePin
-                    selectedMarkerType = MapPOIItem.MarkerType.RedPin
+                    markerType = MapPOIItem.MarkerType.CustomImage
+                    customImageResourceId = R.drawable.restaurantmaker
+                    isCustomImageAutoscale = true
                 }
                 mapView.addPOIItem(point)
             }

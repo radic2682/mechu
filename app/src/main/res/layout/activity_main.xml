@@ -49,6 +49,20 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/findCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="110dp"
+        android:textSize="18sp"
+        android:text=""
+        android:fontFamily="@font/cafe24ssurround"
+        android:gravity="center"
+        android:textColor="#3d4689"
+        />
+
+
+    <TextView
         android:id="@+id/warnText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -59,18 +73,41 @@
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginBottom="150dp"
         android:visibility="invisible"
+        android:fontFamily="@font/cafe24shiningstar"
         />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/PickFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="60dp"
         android:layout_gravity="center_horizontal|bottom"
-        android:text="골라줭"
+        android:text="골라줄래?"
         android:textSize="20sp"
         app:icon="@drawable/ic_round_fastfood_24"
         android:visibility="invisible"
+        android:backgroundTint="#b79a8d"
+        app:strokeColor="#542c02"
+        app:strokeWidth="2dp"
+        android:textColor="#542c02"
+        app:iconTint="#542c02"
+        android:fontFamily="@font/cafe24ssurround"
         />
 
+    <Button
+        android:id="@+id/infoButton"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="App Info"
+        android:layout_gravity="bottom|start"
+        android:gravity="center"
+        app:iconSize = "22dp"
+        android:fontFamily="@font/cafe24ssurround"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="16dp"
+        android:textColor="#88807c"
+        />
 </FrameLayout>

@@ -1,13 +1,18 @@
 package com.example.mechu
 
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.example.mechu.databinding.ActivityPickBinding
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.*
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 
@@ -20,6 +25,7 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
     private var x : String? = null
     private var y : String? = null
     private var roadAddressName : String? = null
+    private var placeurl : String? = null
 
     private lateinit var naverMap: NaverMap
 
@@ -37,16 +43,16 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
         x = intent.getStringExtra("x")!!
         y = intent.getStringExtra("y")!!
         roadAddressName = intent.getStringExtra("road_address_name")!!
+        placeurl = intent.getStringExtra("place_url")!!
 
         binding.nameOfRest.text = placeName
         binding.phone.text = phone
         binding.address.text = roadAddressName
-
-        Log.d("Test", "Body: $getLatitude")
-        Log.d("Test", "Body: $getLongitude")
-        Log.d("Test", "Body: $x")
-        Log.d("Test", "Body: $y")
-
+        binding.linkButton.setOnClickListener{
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setData(Uri.parse(placeurl));
+            startActivity(intent);
+        }
 
         val mapFragment = displayMapOnScreen(supportFragmentManager)
         mapFragment.getMapAsync(this)
