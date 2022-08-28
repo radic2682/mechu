@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.example.mechu.databinding.ActivityPickBinding
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
@@ -38,6 +40,14 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
         val binding = ActivityPickBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 광고 설정
+        MobileAds.initialize(this) {}
+        val adRequest = AdRequest.Builder().build()
+        binding.adView.loadAd(adRequest)
+
+
+
+        // 데이터 인텐트에서 받아오기
         getLatitude = intent.getDoubleExtra("Latitude", 0.0)
         getLongitude = intent.getDoubleExtra("Longitude", 0.0)
         placeName = intent.getStringExtra("place_name")!!
@@ -47,6 +57,7 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
         roadAddressName = intent.getStringExtra("road_address_name")!!
         placeurl = intent.getStringExtra("place_url")!!
 
+        // 데이터 화면에 출력
         binding.nameOfRest.text = placeName
         if (phone == ""){
             binding.phone.text = " 전화번호가 없어요...ㅠㅠ"
