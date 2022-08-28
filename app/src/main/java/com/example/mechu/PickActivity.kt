@@ -50,8 +50,8 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.address.text = roadAddressName
         binding.linkButton.setOnClickListener{
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.setData(Uri.parse(placeurl));
-            startActivity(intent);
+            intent.data = Uri.parse(placeurl)
+            startActivity(intent)
         }
 
         val mapFragment = displayMapOnScreen(supportFragmentManager)

@@ -18,26 +18,32 @@
         android:theme="@style/Theme.Mechu"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".InfoActivity"
-            android:exported="false" />
-
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="8b52dbe8d673dd33fb32c215ed1ccb14" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="uu3vsuapmy" />
-
+        <activity
+            android:name=".InfoActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".PickActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".GameActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

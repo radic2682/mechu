@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">mechu</string>
+    <string name="copyright">저작권 어쩌고 저쩌고 뭘 사용했고</string>
+    <string name="mechu">Mechu</string>
+    <string name="playGame">내기하실?</string>
+    <string name="ifCantPermisson">위치 권한이 허용되지 않았습니다.\n\n설정에서 위치 권한을 허용해주셔야\n이용이 가능합니다.</string>
+    <string name="pickMent">골라줄래?</string>
+    <string name="app_info">App Info</string>
+    <string name="today">오늘은</string>
+    <string name="place_name">가게이름</string>
+    <string name="where_eat">에서 먹을까요?</string>
+    <string name="information">Information</string>
+    <string name="phone_number">전화번호:</string>
+    <string name="address">주소:</string>
+    <string name="game">game</string>
 </resources>

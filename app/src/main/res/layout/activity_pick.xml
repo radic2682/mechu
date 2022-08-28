@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MeChu"
+        android:text="@string/mechu"
         android:textSize="40sp"
         android:fontFamily="@font/nautiluspompilius"
         android:textColor="@color/black"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:textSize="25sp"
-            android:text="오늘은"
+            android:text="@string/today"
             android:fontFamily="@font/cafe24ssurround"
             android:textColor="#b79a8d"
             />
@@ -46,8 +46,8 @@
             android:layout_marginBottom="10dp"
             android:layout_gravity="center"
             android:textSize="34sp"
-            android:text="가게이름"
-            android:textColor="#2c145c"
+            android:text="@string/place_name"
+            android:textColor="#432818"
             android:fontFamily="@font/gmarketsansmedium"
             />
         <TextView
@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="25sp"
-            android:text="에서 먹을까요?"
+            android:text="@string/where_eat"
             android:fontFamily="@font/cafe24ssurround"
             android:textColor="#b79a8d"
             />
@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="26sp"
-            android:text="Intormation"
+            android:text="@string/information"
             android:layout_marginTop="40dp"
             android:fontFamily="@font/nautiluspompilius"
             />
@@ -108,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="22sp"
-                android:text="전화번호: "
+                android:text="@string/phone_number"
                 android:fontFamily="@font/cafe24shiningstar"
                 />
             <TextView
@@ -129,7 +129,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="22sp"
-                android:text="주소: "
+                android:text="@string/address"
                 android:fontFamily="@font/cafe24shiningstar"
             />
             <TextView
