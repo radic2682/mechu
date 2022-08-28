@@ -3,7 +3,7 @@
     <style name="Theme.Mechu" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#39272a</item>
-        <item name="colorPrimaryVariant">#d5bdaf</item>
+        <item name="colorPrimaryVariant">#8c6d5a</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
