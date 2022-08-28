@@ -1,5 +1,6 @@
 package com.example.mechu
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -29,6 +30,7 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var naverMap: NaverMap
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pick)
@@ -46,8 +48,12 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
         placeurl = intent.getStringExtra("place_url")!!
 
         binding.nameOfRest.text = placeName
-        binding.phone.text = phone
-        binding.address.text = roadAddressName
+        if (phone == ""){
+            binding.phone.text = " 전화번호가 없어요...ㅠㅠ"
+        } else{
+            binding.phone.text = " $phone"
+        }
+        binding.address.text = " $roadAddressName"
         binding.linkButton.setOnClickListener{
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(placeurl)

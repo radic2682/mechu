@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     private val listItems = ArrayList<Place>()
 
-
     // REST API 키
     companion object {
         const val BASE_URL = "https://dapi.kakao.com/"
@@ -70,23 +69,18 @@ class MainActivity : AppCompatActivity() {
         //최초 권한 확인
         registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted ->
                 if(isGranted){
-                    //위치 정보를 받아옴
-                    setPosition()
+                    setPosition() //위치 정보를 받아옴
 
                     //지도 설정
                     mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(getLatitude!!, getLongitude!!), 3, true)
                     mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
-                    //지역 정보 받아오고 마커 찍기
-                    searchKeywordAndMaker(binding, mapView, pickIntent)
-
-
+                    searchKeywordAndMaker(binding, mapView, pickIntent) //지역 정보 받아오고 마커 찍기
                 } else {
                     missingPermisson(binding)
                 }
         }.launch("android.permission.ACCESS_FINE_LOCATION")
     }
-
 
     private fun missingPermisson(binding: ActivityMainBinding) {
         Toast.makeText(this, "앱 설정에서 위치 정보 제공을 동의해야\n" +
@@ -146,8 +140,6 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Test", "Body: ${response.body()}")
 
                     saveResultofAPI(mapView, response.body())
-                    //Log.d("Test0", listItems.size.toString())
-
 
                     // 인텐트로 pickActivity에 전달
                     val randomNum = (0..listItems.size).random()
@@ -172,7 +164,6 @@ class MainActivity : AppCompatActivity() {
             override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
                 // 통신 실패
                 Log.w("MainActivity", "통신 실패: ${t.message}")
-                TODO("메세지 띄우기 서버 통신 불량")
             }
         })
     }
@@ -191,9 +182,7 @@ class MainActivity : AppCompatActivity() {
                     document.x,
                     document.y
                 )
-
                 listItems.add(tempPlace)
-
 
                 // 지도에 마커 추가
                 mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
@@ -208,7 +197,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 mapView.addPOIItem(point)
             }
-
         } else {
             // 검색 결과 없음
         }
