@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.mechu">
+    package="com.mechu.mechu">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -17,18 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mechu"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
-        <meta-data
-            android:name="com.kakao.sdk.AppKey"
-            android:value="8b52dbe8d673dd33fb32c215ed1ccb14" />
-        <meta-data
-            android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="uu3vsuapmy" />
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+        tools:targetApi="31"
+        android:networkSecurityConfig="@xml/network_security_config"
+        >
         <activity
-            android:name=".SplashActivity"
+            android:name="com.mechu.mechu.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity"
@@ -39,27 +32,35 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".InfoActivity"
+            android:name="com.mechu.mechu.InfoActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".PickActivity"
+            android:name="com.mechu.mechu.PickActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".GameActivity"
+            android:name="com.mechu.mechu.GameActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.mechu.mechu.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
-
         </activity>
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="6ae018ae5d8155ec4e3ae795eb1b9d8d" />
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="uu3vsuapmy" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-3940256099942544~3347511713"/>
     </application>
 
 </manifest>

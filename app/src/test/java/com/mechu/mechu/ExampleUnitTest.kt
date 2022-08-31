@@ -1,4 +1,4 @@
-package com.example.mechu
+package com.mechu.mechu
 
 import org.junit.Test
 

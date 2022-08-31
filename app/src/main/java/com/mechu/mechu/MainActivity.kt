@@ -1,4 +1,4 @@
-package com.example.mechu
+package com.mechu.mechu
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -16,7 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.mechu.databinding.ActivityMainBinding
+import com.mechu.mechu.databinding.ActivityMainBinding
 import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
@@ -36,18 +36,23 @@ class MainActivity : AppCompatActivity() {
     // REST API 키
     companion object {
         const val BASE_URL = "https://dapi.kakao.com/"
-        const val API_KEY = "KakaoAK 18385c4f27c0bc5b310a297d80a3fbed"
+        const val API_KEY = "KakaoAK 5bc9b77baaa71c5e14d7af8fbadf57a0"
     }
 
+    @SuppressLint("PackageManagerGetSignatures")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //supportActionBar?.hide()
+
         val pickIntent = Intent(this, PickActivity::class.java)
         val gameIntent = Intent(this, GameActivity::class.java)
         val infoIntent = Intent(this, InfoActivity::class.java)
+
         // 카카오맵 띄우기
         val mapView = MapView(this)
         binding.mapView.addView(mapView)
@@ -72,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                     setPosition() //위치 정보를 받아옴
 
                     //지도 설정
-                    mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(getLatitude!!, getLongitude!!), 3, true)
+                    mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(getLatitude!!, getLongitude!!), 2,true)
                     mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
                     searchKeywordAndMaker(binding, mapView, pickIntent) //지역 정보 받아오고 마커 찍기

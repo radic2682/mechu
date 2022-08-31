@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.Mechu" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Theme.Mechu" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#39272a</item>
         <item name="colorPrimaryVariant">#8c6d5a</item>

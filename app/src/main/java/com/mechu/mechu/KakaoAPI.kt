@@ -1,4 +1,4 @@
-package com.example.mechu
+package com.mechu.mechu
 
 import retrofit2.Call
 import retrofit2.http.GET

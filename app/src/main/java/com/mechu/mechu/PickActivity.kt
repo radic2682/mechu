@@ -1,4 +1,4 @@
-package com.example.mechu
+package com.mechu.mechu
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
-import com.example.mechu.databinding.ActivityPickBinding
+import com.mechu.mechu.databinding.ActivityPickBinding
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.naver.maps.geometry.LatLng
