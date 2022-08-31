@@ -8,7 +8,7 @@
     android:paddingTop="20dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:background="#FFFCFC"
+    android:background="#FBF6F6"
     >
 
     <TextView
@@ -163,7 +163,7 @@
         ads:layout_constraintLeft_toLeftOf="parent"
         ads:layout_constraintRight_toRightOf="parent"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111">
+        ads:adUnitId="ca-app-pub-5122582816441728/9402783818">
     </com.google.android.gms.ads.AdView>
 
 
