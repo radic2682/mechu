@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".InfoActivity"
     android:padding="20dp"
+    android:background="#FBF6F6"
     >
     <TextView
         android:id="@+id/mechu"
