@@ -8,27 +8,31 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentManager
 import com.mechu.mechu.api.KakaoAPI
 import com.mechu.mechu.api.Place
 import com.mechu.mechu.api.ResultSearchKeyword
 import com.mechu.mechu.databinding.ActivityMainBinding
-import net.daum.mf.map.api.CalloutBalloonAdapter
-import net.daum.mf.map.api.MapPOIItem
-import net.daum.mf.map.api.MapPoint
-import net.daum.mf.map.api.MapView
-import retrofit2.*
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
+import com.naver.maps.map.util.FusedLocationSource
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var getLatitude : Double? = null //위도
     private var getLongitude : Double? = null //경도
 
@@ -36,11 +40,17 @@ class MainActivity : AppCompatActivity() {
 
     // REST API 키
     companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
         const val BASE_URL = "https://dapi.kakao.com/"
         const val API_KEY = "KakaoAK 5bc9b77baaa71c5e14d7af8fbadf57a0"
     }
 
+    // 네이버 지도
+    private lateinit var locationSource: FusedLocationSource
+    private lateinit var naverMap:NaverMap
+
     private var pageNumberofAPI:Int = 1
+
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,15 +64,20 @@ class MainActivity : AppCompatActivity() {
         val gameIntent = Intent(this, GameActivity::class.java)
         val infoIntent = Intent(this, InfoActivity::class.java)
 
-        // 카카오맵 띄우기
-        val mapView = MapView(this)
-        binding.mapView.addView(mapView)
+        // 네이버맵 추가
+        locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
+        val fm: FragmentManager = supportFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+            ?: MapFragment.newInstance().also {
+                fm.beginTransaction().add(R.id.map, it).commit()
+            }
+        mapFragment!!.getMapAsync(this)
 
         // 버튼들
         binding.PickFab.setOnClickListener {
-            // pickIntent.putExtra("Latitude", getLatitude)
-            // pickIntent.putExtra("Longitude", getLongitude)
-
+            pickIntent.putExtra("Latitude", getLatitude)
+            pickIntent.putExtra("Longitude", getLongitude)
 
             // 인텐트로 pickActivity에 전달
             val random = Random()
@@ -92,21 +107,14 @@ class MainActivity : AppCompatActivity() {
         //최초 권한 확인
         registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted ->
                 if(isGranted){
-                    setPosition() //위치 정보를 받아옴
-
-                    //지도 설정
-                    mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(getLatitude!!, getLongitude!!), 2,true)
-                    mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
-
-                    mapView.removeAllPOIItems() // 지도의 마커 모두 제거
-                    searchKeyword(mapView) //지역 정보 받아오고 마커 찍기
+                    setPosition() //위치 정보를 받아
+                    searchKeyword() //지역 정보 받아오고 마커 찍기
+                    binding.map.visibility = View.VISIBLE
 
                 } else {
                     missingPermisson(binding)
                 }
         }.launch("android.permission.ACCESS_FINE_LOCATION")
-
-
 
         listItems.observe(this) {
             Log.d("Test", "Body: ${listItems.size}")
@@ -122,6 +130,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onMapReady(naverMap: NaverMap) {
+        naverMap.also { this@MainActivity.naverMap = it }
+        naverMap.locationSource = locationSource
+
+        val cameraPosition = CameraPosition(
+            LatLng(37.5666805, 126.9784147),  // 위치 지정
+            16.0 // 줌 레벨
+        )
+        naverMap.cameraPosition = cameraPosition
+        naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+    }
 
     private fun missingPermisson(binding: ActivityMainBinding) {
         Toast.makeText(this, "앱 설정에서 위치 정보 제공을 동의해야\n" +
@@ -158,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchKeyword(mapView: MapView) {
+    private fun searchKeyword() {
         val retrofit = Retrofit.Builder()   // Retrofit 구성
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -179,11 +199,11 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Test", "Body: ${response.body()}")
 
                     listItems.addAll(response.body()!!.documents)
-                    addMaker(mapView, response.body())
+                    addMaker(response.body())
 
                     if(!response.body()!!.meta.is_end){ // 마지막 페이지가 아닌 경우
                         pageNumberofAPI += 1
-                        searchKeyword(mapView)
+                        searchKeyword()
                     }
 
                 } else {
@@ -198,42 +218,23 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun addMaker(mapView: MapView, searchResult: ResultSearchKeyword?) {
+    private fun addMaker(searchResult: ResultSearchKeyword?) {
         if (!searchResult?.documents.isNullOrEmpty()) {
             // 검색 결과 있음
             for (document in searchResult!!.documents) {
                 // 지도에 마커 추가
-                mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
-                val point = MapPOIItem()
-
-                point.apply {
-                    itemName = document.place_name
-                    mapPoint = MapPoint.mapPointWithGeoCoord(document.y.toDouble(), document.x.toDouble())
-                    markerType = MapPOIItem.MarkerType.CustomImage
-                    customImageResourceId = R.drawable.restaurantmaker
-                    isCustomImageAutoscale = true
-                }
-                mapView.addPOIItem(point)
+                val marker = Marker()
+                marker.position = LatLng(document.y.toDouble(), document.x.toDouble())
+                marker.map = naverMap
+                marker.width = 100
+                marker.height = 100
+                marker.captionText = document.place_name
+                marker.captionRequestedWidth = 100
+                marker.icon = OverlayImage.fromResource(R.drawable.restaurantmaker)
             }
         } else { // 검색 결과 없음
         }
     }
 
-    class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
-        @SuppressLint("InflateParams")
-        private val mCalloutBalloon: View = inflater.inflate(R.layout.balloon_layout, null)
-        private val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
-
-        override fun getCalloutBalloon(poiItem: MapPOIItem?): View {
-            // 마커 클릭 시 나오는 말풍선
-            name.text = poiItem?.itemName   // 해당 마커의 정보 이용 가능
-            return mCalloutBalloon
-        }
-
-        override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
-            // 말풍선 클릭 시
-            return mCalloutBalloon
-        }
-    }
 
 }
