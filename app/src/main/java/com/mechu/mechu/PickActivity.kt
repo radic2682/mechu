@@ -23,12 +23,13 @@ import com.naver.maps.map.overlay.OverlayImage
 class PickActivity : AppCompatActivity(), OnMapReadyCallback {
     private var getLatitude : Double? = null //위도
     private var getLongitude : Double? = null //경도
-    private var placeName : String? = null
+    private lateinit var  placeName : String
     private var phone : String? = null
     private var x : String? = null
     private var y : String? = null
     private var roadAddressName : String? = null
     private var placeurl : String? = null
+
 
     private lateinit var naverMap: NaverMap
 
@@ -45,17 +46,17 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
         val adRequest = AdRequest.Builder().build()
         binding.adView.loadAd(adRequest)
 
-
-
         // 데이터 인텐트에서 받아오기
         getLatitude = intent.getDoubleExtra("Latitude", 0.0)
         getLongitude = intent.getDoubleExtra("Longitude", 0.0)
-        placeName = intent.getStringExtra("place_name")!!
-        phone = intent.getStringExtra("phone")!!
+
         x = intent.getStringExtra("x")!!
         y = intent.getStringExtra("y")!!
+        placeName = intent.getStringExtra("place_name")!!
+        phone = intent.getStringExtra("phone")!!
         roadAddressName = intent.getStringExtra("road_address_name")!!
         placeurl = intent.getStringExtra("place_url")!!
+
 
         // 데이터 화면에 출력
         binding.nameOfRest.text = placeName
@@ -101,7 +102,7 @@ class PickActivity : AppCompatActivity(), OnMapReadyCallback {
         marker.iconTintColor = Color.BLACK
         marker.width = 100
         marker.height = 100
-        marker.captionText = placeName!!
+        marker.captionText = placeName
         marker.map = naverMap
     }
 }

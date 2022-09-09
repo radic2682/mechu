@@ -16,22 +16,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.mechu.mechu.api.KakaoAPI
+import com.mechu.mechu.api.Place
+import com.mechu.mechu.api.ResultSearchKeyword
 import com.mechu.mechu.databinding.ActivityMainBinding
 import net.daum.mf.map.api.CalloutBalloonAdapter
 import net.daum.mf.map.api.MapPOIItem
 import net.daum.mf.map.api.MapPoint
 import net.daum.mf.map.api.MapView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private var getLatitude : Double? = null //위도
     private var getLongitude : Double? = null //경도
 
-    private val listItems = ArrayList<Place>()
+    private var listItems = ListLiveData<Place>()
 
     // REST API 키
     companion object {
@@ -39,15 +40,15 @@ class MainActivity : AppCompatActivity() {
         const val API_KEY = "KakaoAK 5bc9b77baaa71c5e14d7af8fbadf57a0"
     }
 
-    @SuppressLint("PackageManagerGetSignatures")
+    private var pageNumberofAPI:Int = 1
+
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //supportActionBar?.hide()
 
         val pickIntent = Intent(this, PickActivity::class.java)
         val gameIntent = Intent(this, GameActivity::class.java)
@@ -59,10 +60,27 @@ class MainActivity : AppCompatActivity() {
 
         // 버튼들
         binding.PickFab.setOnClickListener {
-            searchKeywordAndMaker(binding, mapView, pickIntent)
-            pickIntent.putExtra("Latitude", getLatitude)
-            pickIntent.putExtra("Longitude", getLongitude)
+            // pickIntent.putExtra("Latitude", getLatitude)
+            // pickIntent.putExtra("Longitude", getLongitude)
+
+
+            // 인텐트로 pickActivity에 전달
+            val random = Random()
+            val randomNum = random.nextInt(listItems.size)
+            Log.d("Test", "listItems.size: ${listItems.size}")
+            Log.d("Test", "randomNum: $randomNum")
+
+            val tempPlace: Place = listItems[randomNum]
+            val tempPlaceName: String = tempPlace.place_name
+            pickIntent.putExtra("place_name", tempPlaceName)
+            pickIntent.putExtra("x", tempPlace.x)
+            pickIntent.putExtra("y", tempPlace.y)
+            pickIntent.putExtra("phone", tempPlace.phone)
+            pickIntent.putExtra("road_address_name", tempPlace.road_address_name)
+            pickIntent.putExtra("place_url", tempPlace.place_url)
+
             startActivity(pickIntent)
+
         }
         binding.gameButton.setOnClickListener {
             startActivity(gameIntent)
@@ -80,12 +98,30 @@ class MainActivity : AppCompatActivity() {
                     mapView.setMapCenterPointAndZoomLevel(MapPoint.mapPointWithGeoCoord(getLatitude!!, getLongitude!!), 2,true)
                     mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeading
 
-                    searchKeywordAndMaker(binding, mapView, pickIntent) //지역 정보 받아오고 마커 찍기
+                    mapView.removeAllPOIItems() // 지도의 마커 모두 제거
+                    searchKeyword(mapView) //지역 정보 받아오고 마커 찍기
+
                 } else {
                     missingPermisson(binding)
                 }
         }.launch("android.permission.ACCESS_FINE_LOCATION")
+
+
+
+        listItems.observe(this) {
+            Log.d("Test", "Body: ${listItems.size}")
+
+            binding.PickFab.visibility = View.VISIBLE
+
+            if(listItems.size != 0){
+                binding.findCount.text = "행운이에요!\n근처에 ${listItems.size}개의 음식점이 있어요!"
+            } else {
+                binding.findCount.text = "ㅠㅠ...\n근처에 음식점이 없어요..."
+            }
+        }
+
     }
+
 
     private fun missingPermisson(binding: ActivityMainBinding) {
         Toast.makeText(this, "앱 설정에서 위치 정보 제공을 동의해야\n" +
@@ -122,13 +158,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun searchKeywordAndMaker(binding: ActivityMainBinding, mapView: MapView, pickIntent:Intent) {
+    private fun searchKeyword(mapView: MapView) {
         val retrofit = Retrofit.Builder()   // Retrofit 구성
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(KakaoAPI::class.java)   // 통신 인터페이스를 객체로 생성
-        val call = api.getSearchCategory(API_KEY, "FD6", getLongitude.toString(), getLatitude.toString(), 600)
+        val call = api.getSearchCategory(API_KEY, "FD6", getLongitude.toString(), getLatitude.toString(), 600, pageNumberofAPI)
 
         // API 서버에 요청
         call.enqueue(object: Callback<ResultSearchKeyword> {
@@ -139,31 +175,20 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if(response.isSuccessful) {
                     // 통신 성공 (검색 결과는 response.body()에 담겨있음)
-                    binding.PickFab.visibility = View.VISIBLE
-
                     Log.d("Test", "Raw: ${response.raw()}")
                     Log.d("Test", "Body: ${response.body()}")
 
-                    saveResultofAPI(mapView, response.body())
+                    listItems.addAll(response.body()!!.documents)
+                    addMaker(mapView, response.body())
 
-                    // 인텐트로 pickActivity에 전달
-                    val randomNum = (0..listItems.size).random()
-                    pickIntent.putExtra("place_name", listItems[randomNum].place_name)
-                    pickIntent.putExtra("x", listItems[randomNum].x)
-                    pickIntent.putExtra("y", listItems[randomNum].y)
-                    pickIntent.putExtra("phone", listItems[randomNum].phone)
-                    pickIntent.putExtra("road_address_name", listItems[randomNum].road_address_name)
-                    pickIntent.putExtra("place_url", listItems[randomNum].place_url)
-
-                    if(listItems.size != 0){
-                        binding.findCount.text = "행운이에요!\n근처에 ${listItems.size}개의 음식점이 있어요!"
-                    } else {
-                        binding.findCount.text = "ㅠㅠ...\n근처에 음식점이 없어요..."
+                    if(!response.body()!!.meta.is_end){ // 마지막 페이지가 아닌 경우
+                        pageNumberofAPI += 1
+                        searchKeyword(mapView)
                     }
-                } else {
-                    // 통신은 성공했지만 문제가 있는 경우
-                }
 
+                } else {
+                    Log.w("MainActivity", "통신은 성공했지만 알 수 없는 문제 발생")
+                }
             }
 
             override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
@@ -173,22 +198,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun saveResultofAPI(mapView: MapView, searchResult: ResultSearchKeyword?) {
+    private fun addMaker(mapView: MapView, searchResult: ResultSearchKeyword?) {
         if (!searchResult?.documents.isNullOrEmpty()) {
             // 검색 결과 있음
-            listItems.clear()           // 리스트 초기화
-            mapView.removeAllPOIItems() // 지도의 마커 모두 제거
             for (document in searchResult!!.documents) {
-                val tempPlace = Place(document.place_name,
-                    document.road_address_name,
-                    document.address_name,
-                    document.phone,
-                    document.place_url,
-                    document.x,
-                    document.y
-                )
-                listItems.add(tempPlace)
-
                 // 지도에 마커 추가
                 mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))
                 val point = MapPOIItem()
@@ -202,8 +215,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 mapView.addPOIItem(point)
             }
-        } else {
-            // 검색 결과 없음
+        } else { // 검색 결과 없음
         }
     }
 
