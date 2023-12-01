@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
         const val BASE_URL = "https://dapi.kakao.com/"
-        const val API_KEY = "KakaoAK 5bc9b77baaa71c5e14d7af8fbadf57a0"
+        const val API_KEY = "--------------------------------------"
     }
 
     // 네이버 지도
